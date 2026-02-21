@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/fees")
@@ -78,5 +79,19 @@ public class FeeController {
     public Result<List<FeeType>> getAllFeeTypes() {
         List<FeeType> feeTypes = feeService.getAllFeeTypes();
         return Result.success(feeTypes);
+    }
+
+    @GetMapping("/summary")
+    public Result<Map<String, Object>> getFeeSummary() {
+        Map<String, Object> summary = feeService.getFeeSummary();
+        return Result.success(summary);
+    }
+
+    @GetMapping("/payment-history")
+    public Result<PageResult<FeeRecord>> getPaymentHistory(
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "10") Integer size) {
+        Page<FeeRecord> result = feeService.getPaymentHistory(page, size);
+        return Result.success(PageResult.of(result));
     }
 }

@@ -11,6 +11,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
@@ -58,5 +61,47 @@ public class UserController {
     public Result<Void> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
         return Result.success();
+    }
+
+    @GetMapping("/info")
+    public Result<User> getCurrentUser() {
+        User user = userService.getCurrentUser();
+        return Result.success(user);
+    }
+
+    @PutMapping("/update")
+    public Result<User> updateCurrentUser(@Valid @RequestBody UserUpdateDTO dto) {
+        User user = userService.updateCurrentUser(dto);
+        return Result.success("更新成功", user);
+    }
+
+    @GetMapping("/elders")
+    public Result<List<User>> getRelatedElders() {
+        List<User> elders = userService.getRelatedElders();
+        return Result.success(elders);
+    }
+
+    @PostMapping("/settings")
+    public Result<Void> updateSettings(@RequestBody Map<String, Object> settings) {
+        userService.updateSettings(settings);
+        return Result.success();
+    }
+
+    @PostMapping("/clear-cache")
+    public Result<Void> clearCache() {
+        userService.clearCache();
+        return Result.success();
+    }
+
+    @PostMapping("/feedback")
+    public Result<Void> submitFeedback(@RequestBody Map<String, Object> feedback) {
+        userService.submitFeedback(feedback);
+        return Result.success();
+    }
+
+    @GetMapping("/unread-count")
+    public Result<Long> getUnreadCount() {
+        Long count = userService.getUnreadCount();
+        return Result.success(count);
     }
 }

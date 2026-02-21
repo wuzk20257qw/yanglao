@@ -7,6 +7,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 @Repository
 public interface AlarmRecordRepository extends JpaRepository<AlarmRecord, Long>, JpaSpecificationExecutor<AlarmRecord> {
 
@@ -17,4 +20,7 @@ public interface AlarmRecordRepository extends JpaRepository<AlarmRecord, Long>,
     Page<AlarmRecord> findAllByOrderByCreateTimeDesc(Pageable pageable);
 
     Long countByStatus(Integer status);
+
+    List<AlarmRecord> findByElderIdAndCreateTimeBetweenOrderByCreateTimeDesc(
+            Long elderId, LocalDateTime startTime, LocalDateTime endTime);
 }

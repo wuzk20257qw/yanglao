@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 
 @Data
 @Entity
@@ -40,6 +41,12 @@ public class User {
 
     @Column(name = "update_time")
     private LocalDateTime updateTime;
+
+    @Column(name = "elder_id")
+    private Long elderId;
+
+    @Transient
+    private Map<String, Object> settings;
 
     @PrePersist
     protected void onCreate() {

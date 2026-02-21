@@ -10,6 +10,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/alarm-records")
 @RequiredArgsConstructor
@@ -65,5 +68,25 @@ public class AlarmRecordController {
             @RequestParam(required = false) String handleNotes) {
         AlarmRecord record = alarmRecordService.handleAlarm(id, handleBy, handleNotes);
         return Result.success("处理成功", record);
+    }
+
+    @GetMapping("/unhandled-count")
+    public Result<Long> getUnhandledCount() {
+        Long count = alarmRecordService.getUnhandledCount();
+        return Result.success(count);
+    }
+
+    @GetMapping("/related/health")
+    public Result<List<Map<String, Object>>> getRelatedHealthRecords(@RequestParam Long elderId) {
+        List<Map<String, Object>> records = alarmRecordService.getRelatedHealthRecords(elderId);
+        return Result.success(records);
+    }
+
+    @GetMapping("/history")
+    public Result<Page<AlarmRecord>> getHistory(
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "10") Integer size) {
+        Page<AlarmRecord> result = alarmRecordService.getHistory(page, size);
+        return Result.success(result);
     }
 }

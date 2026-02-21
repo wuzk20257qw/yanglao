@@ -10,6 +10,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/dining-records")
 @RequiredArgsConstructor
@@ -48,5 +50,25 @@ public class DiningRecordController {
     public Result<Void> deleteDiningRecord(@PathVariable Long id) {
         diningRecordService.deleteDiningRecord(id);
         return Result.success();
+    }
+
+    @GetMapping("/meal-plan")
+    public Result<Map<String, Object>> getMealPlan(
+            @RequestParam String startDate,
+            @RequestParam String endDate) {
+        Map<String, Object> plan = diningRecordService.getMealPlan(startDate, endDate);
+        return Result.success(plan);
+    }
+
+    @GetMapping("/{id}/feedback")
+    public Result<Void> submitMealFeedback(@PathVariable Long id, @RequestBody Map<String, Object> feedback) {
+        diningRecordService.submitMealFeedback(id, feedback);
+        return Result.success();
+    }
+
+    @GetMapping("/nutrition-report")
+    public Result<Map<String, Object>> getNutritionReport(@RequestParam Long elderId) {
+        Map<String, Object> report = diningRecordService.getNutritionReport(elderId);
+        return Result.success(report);
     }
 }

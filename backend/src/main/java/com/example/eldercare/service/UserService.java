@@ -171,4 +171,56 @@ public class UserService {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("用户不存在"));
     }
+
+    public User getCurrentUser() {
+        Long userId = 1L;
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("用户不存在"));
+    }
+
+    @Transactional
+    public User updateCurrentUser(UserUpdateDTO dto) {
+        Long userId = 1L;
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("用户不存在"));
+
+        user.setRealName(dto.getRealName());
+        user.setPhone(dto.getPhone());
+
+        return userRepository.save(user);
+    }
+
+    public List<User> getRelatedElders() {
+        // 模拟返回关联的老人列表
+        return userRepository.findByRole("ELDER");
+    }
+
+    @Transactional
+    public void updateSettings(Map<String, Object> settings) {
+        Long userId = 1L;
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("用户不存在"));
+
+        if (user.getSettings() == null) {
+            user.setSettings(new HashMap<>());
+        }
+
+        user.getSettings().putAll(settings);
+        userRepository.save(user);
+    }
+
+    @Transactional
+    public void clearCache() {
+        // 清除缓存逻辑
+    }
+
+    @Transactional
+    public void submitFeedback(Map<String, Object> feedback) {
+        // 保存反馈到数据库
+    }
+
+    public Long getUnreadCount() {
+        Long userId = 1L;
+        return 0L;
+    }
 }

@@ -10,6 +10,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/nursing-records")
 @RequiredArgsConstructor
@@ -54,6 +57,20 @@ public class NursingRecordController {
     @DeleteMapping("/{id}")
     public Result<Void> deleteNursingRecord(@PathVariable Long id) {
         nursingRecordService.deleteNursingRecord(id);
+        return Result.success();
+    }
+
+    @GetMapping("/statistics")
+    public Result<Map<String, Object>> getNursingStatistics(
+            @RequestParam Long elderId,
+            @RequestParam(required = false) Integer days) {
+        Map<String, Object> statistics = nursingRecordService.getNursingStatistics(elderId, days);
+        return Result.success(statistics);
+    }
+
+    @PostMapping("/{id}/evaluation")
+    public Result<Void> submitEvaluation(@PathVariable Long id, @RequestBody Map<String, Object> evaluation) {
+        nursingRecordService.submitEvaluation(id, evaluation);
         return Result.success();
     }
 }

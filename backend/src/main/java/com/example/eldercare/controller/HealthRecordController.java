@@ -10,6 +10,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/health-records")
 @RequiredArgsConstructor
@@ -55,5 +58,31 @@ public class HealthRecordController {
     public Result<Void> deleteHealthRecord(@PathVariable Long id) {
         healthRecordService.deleteHealthRecord(id);
         return Result.success();
+    }
+
+    @GetMapping("/elder/{elderId}/summary")
+    public Result<Map<String, Object>> getHealthSummary(
+            @PathVariable Long elderId,
+            @RequestParam(defaultValue = "7") Integer days) {
+        Map<String, Object> summary = healthRecordService.getHealthSummary(elderId, days);
+        return Result.success(summary);
+    }
+
+    @GetMapping("/trend")
+    public Result<List<Map<String, Object>>> getHealthTrend(
+            @RequestParam Long elderId,
+            @RequestParam String indicator,
+            @RequestParam(defaultValue = "7") Integer days) {
+        List<Map<String, Object>> trend = healthRecordService.getHealthTrend(elderId, indicator, days);
+        return Result.success(trend);
+    }
+
+    @GetMapping("/related/nursing")
+    public Result<List<Map<String, Object>>> getRelatedNursingRecords(
+            @RequestParam Long elderId,
+            @RequestParam String startDate,
+            @RequestParam String endDate) {
+        List<Map<String, Object>> records = healthRecordService.getRelatedNursingRecords(elderId, startDate, endDate);
+        return Result.success(records);
     }
 }

@@ -21,8 +21,8 @@ import org.springframework.transaction.annotation.Transactional;
 import jakarta.persistence.criteria.Predicate;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.time.YearMonth;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -127,5 +127,49 @@ public class FeeService {
 
     public List<FeeType> getAllFeeTypes() {
         return feeTypeRepository.findAll();
+    }
+
+    public Map<String, Object> getFeeSummary() {
+        Long userId = 1L;
+        YearMonth currentMonth = YearMonth.now();
+        LocalDate startOfMonth = currentMonth.atDay(1);
+        LocalDate endOfMonth = currentMonth.atEndOfMonth();
+
+        List<FeeRecord> allFees = feeRecordRepository.findAll();
+        List<FeeRecord> monthlyFees = allFees.stream()
+                .filter(f -> !f.getFeeDate().isBefore(startOfMonth) && !f.getFeeDate().isAfter(endOfMonth))
+                .toList();
+
+        BigDecimal totalAmount = monthlyFees.stream()
+                .map(FeeRecord::getAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        BigDecimal paidAmount = monthlyFees.stream()
+                .filter(f -> f.getStatus() == 1)
+                .map(FeeRecord::getAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        BigDecimal unpaidAmount = totalAmount.subtract(paidAmount);
+
+        Map<String, Object> summary = new HashMap<>();
+        summary.put("totalAmount", totalAmount);
+        summary.put("paidAmount", paidAmount);
+        summary.put("unpaidAmount", unpaidAmount);
+        summary.put("month", currentMonth.toString());
+
+        return summary;
+    }
+
+    public Page<FeeRecord> getPaymentHistory(Integer page, Integer size) {
+        Long userId = 1L;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "payTime"));
+
+        Specification<FeeRecord> spec = (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            predicates.add(cb.equal(root.get("status"), 1));
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
+
+        return feeRecordRepository.findAll(spec, pageable);
     }
 }

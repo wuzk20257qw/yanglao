@@ -18,8 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.persistence.criteria.Predicate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -113,5 +113,43 @@ public class AlarmRecordService {
         record.setHandleTime(LocalDateTime.now());
 
         return alarmRecordRepository.save(record);
+    }
+
+    public Long getUnhandledCount() {
+        return alarmRecordRepository.countByStatus(0);
+    }
+
+    public List<Map<String, Object>> getRelatedHealthRecords(Long elderId) {
+        LocalDateTime startDateTime = LocalDateTime.now().minusDays(7);
+        LocalDateTime endDateTime = LocalDateTime.now();
+
+        List<AlarmRecord> alarmRecords = alarmRecordRepository
+                .findByElderIdAndCreateTimeBetweenOrderByCreateTimeDesc(
+                        elderId, startDateTime, endDateTime);
+
+        return alarmRecords.stream()
+                .map(record -> {
+                    Map<String, Object> item = new HashMap<>();
+                    item.put("id", record.getId());
+                    item.put("type", "alarm");
+                    item.put("time", record.getCreateTime().toString());
+                    item.put("content", record.getContent());
+                    return item;
+                })
+                .collect(Collectors.toList());
+    }
+
+    public Page<AlarmRecord> getHistory(Integer page, Integer size) {
+        Long elderId = 1L;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createTime"));
+
+        Specification<AlarmRecord> spec = (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            predicates.add(cb.equal(root.get("elderId"), elderId));
+            predicates.add(cb.equal(root.get("status"), 1));
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
+
+        return alarmRecordRepository.findAll(spec, pageable);
     }
 }

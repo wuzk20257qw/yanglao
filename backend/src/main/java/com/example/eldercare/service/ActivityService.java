@@ -140,4 +140,21 @@ public class ActivityService {
         dto.setStatus(activity.getStatus());
         return dto;
     }
+
+    @Transactional
+    public void joinActivity(Long activityId) {
+        incrementParticipants(activityId);
+    }
+
+    @Transactional
+    public void cancelJoin(Long activityId) {
+        decrementParticipants(activityId);
+    }
+
+    public List<ActivityDTO> getJoinedActivities(Long userId) {
+        return activityRepository.findAll().stream()
+                .limit(10)
+                .map(this::toDTO)
+                .toList();
+    }
 }

@@ -18,9 +18,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.persistence.criteria.Predicate;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -97,5 +98,32 @@ public class NursingRecordService {
         };
 
         return nursingRecordRepository.findAll(spec, pageable);
+    }
+
+    public Map<String, Object> getNursingStatistics(Long elderId, Integer days) {
+        days = days != null ? days : 7;
+        LocalDateTime startDateTime = LocalDateTime.now().minusDays(days);
+        LocalDateTime endDateTime = LocalDateTime.now();
+
+        List<NursingRecord> records = nursingRecordRepository.findByElderIdAndRecordTimeBetween(
+                elderId, startDateTime, endDateTime);
+
+        Map<String, Long> typeCounts = records.stream()
+                .collect(Collectors.groupingBy(NursingRecord::getNursingType, Collectors.counting()));
+
+        Map<String, Object> statistics = new HashMap<>();
+        statistics.put("elderId", elderId);
+        statistics.put("totalRecords", records.size());
+        statistics.put("typeCounts", typeCounts);
+        statistics.put("days", days);
+
+        return statistics;
+    }
+
+    @Transactional
+    public void submitEvaluation(Long id, Map<String, Object> evaluation) {
+        NursingRecord record = nursingRecordRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("护理记录不存在"));
+        // 保存评价逻辑
     }
 }

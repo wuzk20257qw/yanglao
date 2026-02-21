@@ -12,6 +12,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/activities")
@@ -51,5 +53,24 @@ public class ActivityController {
     public Result<Void> deleteActivity(@PathVariable Long id) {
         activityService.deleteActivity(id);
         return Result.success();
+    }
+
+    @PostMapping("/{id}/join")
+    public Result<Void> joinActivity(@PathVariable Long id) {
+        activityService.joinActivity(id);
+        return Result.success();
+    }
+
+    @PostMapping("/{id}/cancel")
+    public Result<Void> cancelJoin(@PathVariable Long id) {
+        activityService.cancelJoin(id);
+        return Result.success();
+    }
+
+    @GetMapping("/joined")
+    public Result<List<ActivityDTO>> getJoinedActivities() {
+        Long userId = 1L;
+        List<ActivityDTO> activities = activityService.getJoinedActivities(userId);
+        return Result.success(activities);
     }
 }

@@ -13,8 +13,9 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDate;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -108,5 +109,64 @@ public class DiningRecordService {
         dto.setStatus(record.getStatus());
         dto.setDiningDate(record.getDiningDate());
         return dto;
+    }
+
+    public Map<String, Object> getMealPlan(String startDate, String endDate) {
+        LocalDate start = LocalDate.parse(startDate);
+        LocalDate end = LocalDate.parse(endDate);
+
+        List<DiningRecord> records = diningRecordRepository.findByDiningDateBetween(start, end);
+
+        Map<String, Map<String, Object>> mealPlan = new HashMap<>();
+        for (LocalDate date = start; !date.isAfter(end); date = date.plusDays(1)) {
+            String dateStr = date.toString();
+            Map<String, Object> dayMeals = new HashMap<>();
+            LocalDate currentDate = date;
+
+            Map<String, List<DiningRecordDTO>> byType = records.stream()
+                    .filter(r -> r.getDiningDate().equals(currentDate))
+                    .map(this::toDTO)
+                    .collect(Collectors.groupingBy(DiningRecordDTO::getMealType));
+
+            dayMeals.put("breakfast", byType.getOrDefault("breakfast", Collections.emptyList()));
+            dayMeals.put("lunch", byType.getOrDefault("lunch", Collections.emptyList()));
+            dayMeals.put("dinner", byType.getOrDefault("dinner", Collections.emptyList()));
+
+            mealPlan.put(dateStr, dayMeals);
+        }
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("startDate", startDate);
+        result.put("endDate", endDate);
+        result.put("meals", mealPlan);
+        return result;
+    }
+
+    @Transactional
+    public void submitMealFeedback(Long id, Map<String, Object> feedback) {
+        DiningRecord record = diningRecordRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("餐饮记录不存在"));
+        // 保存反馈逻辑
+    }
+
+    public Map<String, Object> getNutritionReport(Long elderId) {
+        LocalDate start = LocalDate.now().minusDays(7);
+        LocalDate end = LocalDate.now();
+
+        List<DiningRecord> records = diningRecordRepository.findByElderIdAndDiningDateBetween(
+                elderId, start, end);
+
+        Map<String, Object> report = new HashMap<>();
+        report.put("elderId", elderId);
+        report.put("totalMeals", records.size());
+
+        Map<String, Long> mealCounts = records.stream()
+                .collect(Collectors.groupingBy(DiningRecord::getMealType, Collectors.counting()));
+
+        report.put("breakfastCount", mealCounts.getOrDefault("breakfast", 0L));
+        report.put("lunchCount", mealCounts.getOrDefault("lunch", 0L));
+        report.put("dinnerCount", mealCounts.getOrDefault("dinner", 0L));
+
+        return report;
     }
 }
