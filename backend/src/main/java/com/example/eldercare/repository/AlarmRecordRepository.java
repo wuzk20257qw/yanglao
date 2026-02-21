@@ -15,4 +15,6 @@ public interface AlarmRecordRepository extends JpaRepository<AlarmRecord, Long>,
     Page<AlarmRecord> findByStatusOrderByCreateTimeDesc(Integer status, Pageable pageable);
 
     Page<AlarmRecord> findAllByOrderByCreateTimeDesc(Pageable pageable);
+
+    Long countByStatus(Integer status);
 }

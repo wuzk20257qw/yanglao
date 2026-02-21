@@ -11,8 +11,14 @@ const routes = [
   {
     path: '/',
     component: () => import('@/layout/index.vue'),
-    redirect: '/elders',
+    redirect: '/dashboard',
     children: [
+      {
+        path: 'dashboard',
+        name: 'Dashboard',
+        component: () => import('@/views/Dashboard.vue'),
+        meta: { title: '数据看板' }
+      },
       {
         path: 'elders',
         name: 'Elders',
@@ -54,6 +60,24 @@ const routes = [
         name: 'Users',
         component: () => import('@/views/user/UserList.vue'),
         meta: { title: '用户管理' }
+      },
+      {
+        path: 'dining',
+        name: 'Dining',
+        component: () => import('@/views/dining/DiningRecordList.vue'),
+        meta: { title: '餐饮管理' }
+      },
+      {
+        path: 'shifts',
+        name: 'Shifts',
+        component: () => import('@/views/shift/ShiftScheduleList.vue'),
+        meta: { title: '排班管理' }
+      },
+      {
+        path: 'activities',
+        name: 'Activities',
+        component: () => import('@/views/activity/ActivityList.vue'),
+        meta: { title: '活动管理' }
       }
     ]
   }

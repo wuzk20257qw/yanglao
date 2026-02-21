@@ -30,6 +30,10 @@
             text-color="#fff"
             active-text-color="#ffd04b"
           >
+            <el-menu-item index="/dashboard">
+              <el-icon><TrendCharts /></el-icon>
+              <span>数据看板</span>
+            </el-menu-item>
             <el-menu-item index="/elders">
               <el-icon><User /></el-icon>
               <span>老人管理</span>
@@ -57,6 +61,18 @@
             <el-menu-item index="/users">
               <el-icon><UserFilled /></el-icon>
               <span>用户管理</span>
+            </el-menu-item>
+            <el-menu-item index="/dining">
+              <el-icon><Bowl /></el-icon>
+              <span>餐饮管理</span>
+            </el-menu-item>
+            <el-menu-item index="/shifts">
+              <el-icon><Clock /></el-icon>
+              <span>排班管理</span>
+            </el-menu-item>
+            <el-menu-item index="/activities">
+              <el-icon><Trophy /></el-icon>
+              <span>活动管理</span>
             </el-menu-item>
           </el-menu>
         </el-aside>

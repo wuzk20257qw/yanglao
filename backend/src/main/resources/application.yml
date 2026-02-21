@@ -18,7 +18,7 @@ spring:
     time-zone: GMT+8
 
 server:
-  port: 8888
+  port: 7777
 
 # JWT配置
 jwt:

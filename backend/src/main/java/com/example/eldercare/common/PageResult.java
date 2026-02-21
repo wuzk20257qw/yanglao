@@ -2,6 +2,7 @@ package com.example.eldercare.common;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -24,5 +25,14 @@ public class PageResult<T> {
 
     public static <T> PageResult<T> of(List<T> records, Long total, Integer size, Integer current) {
         return new PageResult<>(records, total, size, current);
+    }
+
+    public static <T> PageResult<T> of(Page<T> page) {
+        return new PageResult<>(
+            page.getContent(),
+            page.getTotalElements(),
+            page.getSize(),
+            page.getNumber()
+        );
     }
 }

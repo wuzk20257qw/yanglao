@@ -2,7 +2,7 @@ import request from '@/utils/request'
 
 export function getFeeRecords(params) {
   return request({
-    url: '/fees',
+    url: '/fee-records',
     method: 'get',
     params
   })
@@ -10,14 +10,14 @@ export function getFeeRecords(params) {
 
 export function getFeeRecordById(id) {
   return request({
-    url: `/fees/${id}`,
+    url: `/fee-records/${id}`,
     method: 'get'
   })
 }
 
 export function createFeeRecord(data) {
   return request({
-    url: '/fees',
+    url: '/fee-records',
     method: 'post',
     data
   })
@@ -25,7 +25,7 @@ export function createFeeRecord(data) {
 
 export function updateFeeRecord(id, data) {
   return request({
-    url: `/fees/${id}`,
+    url: `/fee-records/${id}`,
     method: 'put',
     data
   })
@@ -33,28 +33,28 @@ export function updateFeeRecord(id, data) {
 
 export function deleteFeeRecord(id) {
   return request({
-    url: `/fees/${id}`,
+    url: `/fee-records/${id}`,
     method: 'delete'
   })
 }
 
 export function payFee(id) {
   return request({
-    url: `/fees/${id}/pay`,
+    url: `/fee-records/${id}/pay`,
     method: 'post'
   })
 }
 
 export function getElderFees(elderId) {
   return request({
-    url: `/fees/elder/${elderId}`,
+    url: `/fee-records/elder/${elderId}`,
     method: 'get'
   })
 }
 
 export function getFeeTypes() {
   return request({
-    url: '/fees/types',
+    url: '/fee-types',
     method: 'get'
   })
 }
